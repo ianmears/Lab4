@@ -26,6 +26,7 @@ import pkgPokerEnum.eAction;
 import pkgPokerEnum.eGame;
 import pkgPokerBLL.Action;
 import pkgPokerBLL.GamePlay;
+import pkgPokerBLL.Player;
 import pkgPokerBLL.Table;
 
 public class PokerTableController implements Initializable {
@@ -106,7 +107,31 @@ public class PokerTableController implements Initializable {
 
 		// Set the PlayerPosition in the Player
 		mainApp.getPlayer().setiPlayerPosition(1);
-
+		
+		Button button = (Button)event.getSource();
+		eAction action = null;
+		if(button.getText().equals("Sit")){
+			action = eAction.Sit;
+		}
+		else if(button.getText().equals("Leave")){
+			action = eAction.Leave;
+		}
+		if(button.getId() == "btnPos3SitLeave"){
+			if(action == eAction.Sit){
+				mainApp.getPlayer().setiPlayerPosition(1);
+			}
+			else{
+				mainApp.getPlayer().setiPlayerPosition(0);
+			}
+		}
+		else if(button.getId() == "btnPos1SitLeave"){
+			if(action == eAction.Sit){
+				mainApp.getPlayer().setiPlayerPosition(2);
+			}
+			else{
+				mainApp.getPlayer().setiPlayerPosition(0);
+			}
+		}
 		// Build an Action message
 		Action act = new Action(eAction.Sit, mainApp.getPlayer());
 
@@ -157,9 +182,32 @@ public class PokerTableController implements Initializable {
 
 	//TODO: Lab #4 Complete the implementation
 	public void Handle_TableState(Table HubPokerTable) {
+		//Iterator it = HubPokerTable.TableNumber().entrySet().iterator();
+		btnPos1SitLeave.setText("Sit");
+		btnPos2SitLeave.setText("Sit");
+		
+		for(Player currPlayer: HubPokerTable.TableNumber().values()){
+			if (currPlayer.getiPlayerPosition() == 1) {
+				lblPlayerPos1.setText(currPlayer.getPlayerName());
+				btnPos1SitLeave.setText("Leave");
+			}
+			else if (currPlayer.getiPlayerPosition() == 2) {
+				lblPlayerPos2.setText(currPlayer.getPlayerName());
+				btnPos2SitLeave.setText("Leave");
+			}
+			ToggleButton btn = getSitLeave(currPlayer.getiPlayerPosition());
+			
+			if (currPlayer.getiPokerClientID() == mainApp.getPlayer().getiPokerClientID()) {
+				btn.setText("Leave");
+				btn.setVisible(true);
 
+			} 
+			else{
+				btn.setVisible(false);
+			} 
+		}
 	}
-
+	
 	public void Handle_GameState(GamePlay HubPokerGame) {
 		
 	}
